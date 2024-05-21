@@ -24,7 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'field_friend = field_friend.field_friend:main'
+            'field_friend = field_friend.field_friend:main',
+            'ui = field_friend.ui:main'
         ],
     },
 )

@@ -9,8 +9,10 @@ from rclpy.node import Node
 import serial
 from geometry_msgs.msg import Twist, Vector3
 from std_msgs.msg import Empty, String
+from launch_ros.substitutions import FindPackageShare
 
-            
+package_name = "field_friend"
+
 class FieldFriendControl(Node):
 
     def __init__(self):
@@ -25,17 +27,20 @@ class FieldFriendControl(Node):
         self.config_subscription = self.create_subscription(
             String,
             'configure',
-            self.config_callback,
+            self.handle_configure,
             10)
         self.cmd_subscription  # prevent unused variable warning
         self.config_subscription  # prevent unused variable warning
         self.port = None
 
     def send(self, line):
-        if self.port is not None:
-            checksum = reduce(ixor, map(ord, line))
-            line = f'{line}@{checksum:02x}\n'
-            self.port.write(line.encode())
+        with serial.Serial('/dev/esp', 115200) as self.port:
+            if self.port is not None:
+                checksum = reduce(ixor, map(ord, line))
+                line = f'{line}@{checksum:02x}\n'
+                self.port.write(line.encode())
+            else:
+                self.get_logger().warning('no Port open')
 
     def config_callback(self, config_msg):
         pass
@@ -45,7 +50,8 @@ class FieldFriendControl(Node):
         self.get_logger().info('received drive command')
     
     def handle_configure(self, data):
-        with open(os.path.dirname(__file__) + '/../startup.liz') as f:
+        self.get_logger().info('received data: ', data)
+        with open(PathJoinSubstitution([FindPackageShare(package_name),'startup.liz',])) as f:
             self.send('!-')
             for line in f.read().splitlines():
                 self.send('!+' + line)
