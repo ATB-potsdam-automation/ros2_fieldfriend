@@ -134,7 +134,7 @@ class FieldFriendControl(Node):
         
         (_, _, yaw) = euler_from_quaternion([self.current_pose.pose.orientation.x, self.current_pose.pose.orientation.y, self.current_pose.pose.orientation.z, self.current_pose.pose.orientation.w])
     
-        delta_t = (ros_time.nanoseconds - Time.from_msg(self.current_pose.header.stamp).nanoseconds) / 10e9
+        delta_t = (ros_time.nanoseconds - Time.from_msg(self.current_pose.header.stamp).nanoseconds) / 1e9
         
         # compute new position from linear and angular speed
         # compute new orientation from angular speed and current orientation
