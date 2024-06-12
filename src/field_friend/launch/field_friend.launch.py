@@ -7,7 +7,13 @@ def generate_launch_description():
             package='field_friend',
             namespace='fieldfriend',
             executable='field_friend',
-            name='sim'
+            name='controller'
+        ),
+        Node(
+            package='field_friend',
+            namespace='fieldfriend',
+            executable='ui',
+            name='ui'
         ),
         # Node(
         #     package='turtlesim',
