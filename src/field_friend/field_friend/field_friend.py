@@ -39,7 +39,7 @@ class FieldFriendControl(Node):
         self.cmd_subscription  # prevent unused variable warning
         self.config_subscription  # prevent unused variable warning
         self.port = None
-        self.publish_tf = True
+        self.publish_tf = False
         self.base_frame_id = 'base_link'
         self.odom_frame = 'odom'
         self.current_pose = PoseStamped()
@@ -153,6 +153,8 @@ class FieldFriendControl(Node):
         odom_msg.twist.twist.linear.x = float(linear_x)
         odom_msg.twist.twist.linear.y = float(linear_y)
         odom_msg.twist.twist.angular.z = angular_z
+
+        # TODO add covariances
 
         self.odometry_publisher.publish(odom_msg)
 
