@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Empty, String
 from geometry_msgs.msg import Twist, Vector3
+from nav_msgs.msg import Odometry
 from nicegui import ui
 import json
 
@@ -12,7 +13,7 @@ class UINode(Node):
         self.publish_twist = self.create_publisher(Twist, '/cmd_vel', 1)
         self.publish_configure = self.create_publisher(Empty, '/configure', 1)
         self.subscription_status = self.create_subscription(String, '/status', self.handle_status, 1)
-        self.subscription_odometry = self.create_subscription(Twist, '/odometry', self.handle_odometry, 1)
+        self.subscription_odometry = self.create_subscription(Odometry, '/odometry', self.handle_odometry, 1)
 
         with ui.row().classes('items-stretch'):
             with ui.card():
@@ -42,15 +43,17 @@ class UINode(Node):
 
     def send(self, x, y):
         cmd_message = Twist()
-        cmd_message.linear.x, cmd_message.linear.y, cmd_message.linear.z = float(y), 0.0, 0.0
-        cmd_message.angular.x, cmd_message.angular.y, cmd_message.angular.z = 0.0, 0.0, float(-x)
+        cmd_message.linear.x, cmd_message.linear.y, cmd_message.linear.z = 0.5 * float(y), 0.0, 0.0
+        cmd_message.angular.x, cmd_message.angular.y, cmd_message.angular.z = 0.0, 0.0, 0.5 * float(-x)
         self.publish_twist.publish(cmd_message)
 
     def handle_status(self, data):
         msg = json.loads(data.data)
+        self.get_logger().info("data.data")
         self.time.text = f'Timestamp: {msg["time"]} ms'
 
     def handle_odometry(self, data):
+        self.get_logger().info("received odometry")
         self.linear.value = data.linear.x
         self.angular.value = data.angular.z
 
